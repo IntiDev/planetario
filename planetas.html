@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Planetas</title>
+	</head>
+	<body>
+		<h2> Planetas </h2>
+
+		<script type="text/javascript">
+		// Petición al servidor
+			function getJSON(url){
+				return new Promise(function(resolve,reject){
+				  var ajax = new XMLHttpRequest();
+				//   Cambiar por FETCH
+				  ajax.open("GET",url);
+				  ajax.send();
+				  ajax.onreadystatechange = function(){
+					if(ajax.readyState == 4){
+						console.log(ajax.responseText);
+					  resolve(JSON.parse(ajax.responseText));
+					}
+				  }
+			  	});
+			  }
+
+			  getJSON("data/earth-like-results.json")//Accede a los json
+				// .then(function (mensaje) {
+				// 	return(getJSON(mensaje.results[0]))
+				// })
+				//  	.then(function (resultado) {
+				//  		console.log(resultado);
+				//  	});
+
+				// 1ra PROMESA
+				.then(function (planetsData) {
+					// for (var i = 0; i < planetsData.results.length; i++) {
+					// 	getJSON(planetsData.results[i]);
+					// } 1ra parte
+					var planetInfo = planetsData.results.map(function (planet) {
+					// getJSON(planet).then(function (planetInfo) {
+					// 	// console.log(planetInfo);
+					// 	objectToDom(planetInfo);
+					// 	}); 2da parte
+						return getJSON(planet);
+					});
+					console.log(planetInfo);
+					return Promise.all(planetInfo);//Indica que la promesa terminó paa continuar el flujo de trabajo
+				})
+				// PLantilla AQUÍ
+				.then( function (dataRecibidadelReturn) {
+					dataRecibidadelReturn.forEach(function (planeta) {
+						objectToDom(planeta);//Imprime directamente en el html
+					})
+				});
+
+				function objectToDom(object) {
+					var div = document.createElement('div');
+					div.innerText = object.pl_name;
+					document.body.appendChild(div);
+				}
+		</script>
+	</body>
+</html>
